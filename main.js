@@ -17,7 +17,7 @@ function init() {
   
   render(objects);
   
-  sweep(canvas.getBoundingClientRect(), 10, objects, ctx);
+  sweep(canvas.getBoundingClientRect(), 10, objects, render);
 }
 
 document.addEventListener('DOMContentLoaded', init)
