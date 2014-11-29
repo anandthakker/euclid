@@ -1,0 +1,29 @@
+{
+  "name": "construction",
+  "version": "1.0.0",
+  "author": "Anand Thakker",
+  "title": "COMMON TITLE FOR HTML PAGES",
+  "description": "DESCRIPTION FOR HTML PAGES",
+  "url": "http://anandthakker.net",
+  "license": "n/a",
+  "dependencies": {
+    "lodash": "^2.4.1"
+  },
+  "devDependencies": {
+    "6to5-browserify": "^1.3.0",
+    "browser-sync": "^1.6.0",
+    "browserify": "^6.3.3",
+    "coffee-script": "^1.8.0",
+    "gulp": "^3.8.9",
+    "gulp-autoprefixer": "^1.0.1",
+    "gulp-clean": "^0.3.1",
+    "gulp-footer": "^1.0.5",
+    "gulp-header": "^1.2.2",
+    "gulp-jshint": "^1.8.5",
+    "gulp-minify-css": "^0.3.11",
+    "gulp-rename": "^1.2.0",
+    "gulp-sass": "^1.2.0",
+    "gulp-uglify": "^1.0.1",
+    "vinyl-source-stream": "^1.0.0"
+  }
+}
