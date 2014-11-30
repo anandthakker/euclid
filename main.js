@@ -17,7 +17,7 @@ function init() {
   objects.push(new Circle(P(300,500),300));
   objects.push(new Circle(P(650,300),200));
   objects.push(new Line(P(300, 200), P(600, 500)));
-  objects.push(new Line(P(400, 500), P(700, 200)));
+  objects.push(new Segment(P(400, 500), P(700, 200)));
   
   render(objects);
   
