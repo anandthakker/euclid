@@ -2,12 +2,15 @@
 let {P, Circle, Line, Segment} = require('./lib/geometry'),
     sweep = require('./lib/sweepline'),
     renderer = require('./lib/render-canvas'),
-    {intersect} = require('./lib/intersection');
+    {intersect} = require('./lib/intersection'),
+    sharpCanvas = require('./lib/sharp-canvas');
 
 function init() {
-  let canvas = document.querySelector('canvas')
+  let canvas = sharpCanvas(document.querySelector('canvas'));
   let ctx = canvas.getContext('2d')
   let render = renderer(ctx)
+
+  
   
   let objects = [];
   
