@@ -1,5 +1,18 @@
 
 
+svg {
+  circle {
+    fill: none;
+    stroke: black;
+  }
+  line {
+    stroke: black;
+  }
+  .control-point {
+    fill: blue;
+    stroke: none;
+  }
+}
 
 
 @media only screen and (min-width: 35em) {

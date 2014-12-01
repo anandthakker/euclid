@@ -1,37 +1,35 @@
 
 let {P, Circle, Line, Segment} = require('./lib/geometry'),
     sweep = require('./lib/sweepline'),
-    renderer = require('./lib/render-canvas'),
-    {intersect} = require('./lib/intersection'),
-    sharpCanvas = require('./lib/sharp-canvas');
+    render = require('./lib/render-d3-svg'),
+    {intersect} = require('./lib/intersection');
 
 function init() {
-  let canvas = sharpCanvas(document.querySelector('canvas'));
-  let ctx = canvas.getContext('2d')
-  let render = renderer(ctx)
-
+  let svg = document.querySelector('svg');
   
+  let {x: left, y: top, width, height} = svg.viewBox.baseVal;
+  let bounds = { left, top, width, height, right: left+width, bottom: top+height };
+  console.log(bounds);
   
   let objects = [];
   
   objects.push(new Circle(P(300,500),300));
   objects.push(new Circle(P(650,300),200));
-  objects.push(new Line(P(300, 200), P(600, 500)));
+  objects.push(new Line(P(200, 100), P(700, 600)));
   objects.push(new Segment(P(400, 500), P(700, 200)));
   
-  render(objects);
-  
   let finite = objects.map(obj=>
-    (obj instanceof Line) ? Segment.clip(canvas.getBoundingClientRect(), obj) : obj);
+    (obj instanceof Line) ? Segment.clip(bounds, obj) : obj);
   let intersections = [];
   for(let i = 0; i < finite.length; i++) {
     for(let j = i+1; j < finite.length; j++) {
       let isect = intersect(finite[i], finite[j]);
-      Array.prototype.push.apply(intersections, isect)
+      Array.prototype.push.apply(objects, isect)
     }
   }
   
-  intersections.forEach(render);
+  console.log(svg);
+  render(svg, objects);
 }
 
 document.addEventListener('DOMContentLoaded', init)
