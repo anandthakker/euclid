@@ -23,9 +23,12 @@ function init() {
    * the scene
    */
   
-  scene.add(new Circle(P(300,500),100));
-  scene.add(new Circle(P(650,300),P(650, 450)));
-  scene.add(new Line(P(200, 100), P(700, 600)));  
+  scene.add(P(width/5*2, height/2));
+  scene.add(P(width/5*3, height/2));
+  scene.add(new Circle(scene.P(0), scene.P(1)));
+  scene.add(new Circle(scene.P(1), scene.P(0)));
+  scene.add(new Circle(scene.P(2), scene.P(1)));
+
 
   /* 
    * render
@@ -34,6 +37,7 @@ function init() {
   function update() {
     scene.updateIntersections();
     render();
+    console.log(scene);
   }
   
   update();
