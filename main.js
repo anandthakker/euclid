@@ -17,7 +17,7 @@ function init() {
     right: left+width,
     bottom: top+height };
   
-  let render = renderer(svg);
+  let update = renderer(svg);
     
   function addClass(obj, klass) {
     obj.classes = obj.classes || new Set();
@@ -72,28 +72,64 @@ function init() {
 
 
   /* 
-   * initial render
+   * render
    */
-   
-  render(objects.concat(controlpoints(objects), intersections(objects)));
   
+  function render() {
+    update(objects.concat(controlpoints(objects), intersections(objects)));
+  }
+  
+  render();
   
   /* 
    * interaction
    */
-  
-  var drag = d3.behavior.drag()
-  .origin(function(d) { return d; })
-  .on("drag", onDrag);
-  
-  function onDrag(d) {
-    console.log(d);
-    d.x = Math.max(5, Math.min(bounds.width - 5, d3.event.x))
-    d.y = Math.max(5, Math.min(bounds.height - 5, d3.event.y))
-    render(objects.concat(controlpoints(objects), intersections(objects)));
+   
+  function translate(p) {
+    p.x += d3.event.dx;
+    p.y += d3.event.dy;
   }
   
-  d3.selectAll('.control-point').call(drag);
+  let pointdrag = d3.behavior.drag()
+  .on('drag', function(d) {
+    d.x = Math.max(5, Math.min(bounds.width - 5, d3.event.x))
+    d.y = Math.max(5, Math.min(bounds.height - 5, d3.event.y))
+    render();
+  });
+  d3.selectAll('.control-point').call(pointdrag);
+  
+  let circledrag = d3.behavior.drag()
+  .on('drag', function(d) {
+    if(d.boundaryPoint) {
+      translate(d.center);
+      translate(d.boundaryPoint);
+    } 
+    else {
+      let dx = d.center.x - d3.event.x;
+      let dy = d.center.y - d3.event.y;
+      d.radius = Math.sqrt(dx*dx + dy*dy);
+    }
+    render();
+  })
+  d3.selectAll('.circle').call(circledrag);
+  
+  
+  let linedrag = d3.behavior.drag()
+  .on('drag', function(d) {
+    d._p.forEach(translate);
+    render();
+  })
+  d3.selectAll('.line').call(linedrag);
+  
+  function mouseover() { d3.select(this).classed('active', true); }
+  function mouseout() { d3.select(this).classed('active', false); }
+  function hover() {
+    this.on('mouseover', mouseover)
+    .on('mouseout', mouseout);
+  }
+  
+  d3.selectAll('.circle').call(hover);
+  d3.selectAll('.line').call(hover);
   
 }
 

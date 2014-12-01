@@ -1,7 +1,7 @@
 
 
 svg {
-  circle {
+  circle.visible {
     fill: none;
     stroke: black;
   }
@@ -11,7 +11,14 @@ svg {
   .control-point {
     fill: blue;
     stroke: none;
+    cursor: pointer;
   }
+  .handle {
+    fill: none;
+    stroke: rgba(0,0,0,0);
+    stroke-width: 20;
+  }
+  .active { stroke-width: 2px; cursor: pointer; }
 }
 
 
