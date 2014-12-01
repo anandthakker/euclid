@@ -1,24 +1,58 @@
 
 let d3 = require('d3');
 
-let {P, Circle, Line, Segment} = require('./lib/geometry'),
-    sweep = require('./lib/sweepline'),
-    render = require('./lib/render-d3-svg'),
-    {intersect} = require('./lib/intersection');
-
+let Set = require('./lib/set'),
+    {P, Circle, Line, Segment} = require('./lib/geometry'),
+    {intersect, Intersection} = require('./lib/intersection'),
+    renderer = require('./lib/render-d3-svg');
+    
 function init() {
   let svg = document.querySelector('svg');
-  
   let {x: left, y: top, width, height} = svg.viewBox.baseVal;
-  let bounds = { left, top, width, height, right: left+width, bottom: top+height };
+  let bounds = {
+    width,
+    height,
+    left,
+    top,
+    right: left+width,
+    bottom: top+height };
   
+  let render = renderer(svg);
+    
+  function addClass(obj, klass) {
+    obj.classes = obj.classes || new Set();
+    obj.classes.add(klass);
+  }
+  
+  
+  /* 
+   * the scene
+   */
   
   let objects = [];
   
   objects.push(new Circle(P(300,500),300));
   objects.push(new Circle(P(650,300),200));
+  objects.push(new Segment(objects[0].center, objects[1].center));
   objects.push(new Line(P(200, 100), P(700, 600)));
-  objects.push(new Segment(P(400, 500), P(700, 200)));
+  
+  function controlpoints(objects) {
+    // grab circle centers, segment endpoints, and line defining points
+    let res = objects.reduce( function(res, obj) {
+      if(obj instanceof Circle)
+        res.push(obj.center)
+      else if(obj instanceof Line)
+        res.push(obj._p[0], obj._p[1])
+      return res;
+    }, [])
+
+    // add specific class
+    res.forEach(p => addClass(p, 'control-point'));
+    
+    // filter out any control points that we're already drawing as part of
+    // the scene.
+    return res.filter(p => objects.indexOf(p) < 0 && !(p instanceof Intersection));
+  }
   
   function intersections(objects) {
     let finite = objects.map(obj=>
@@ -26,26 +60,40 @@ function init() {
     let intersections = [];
     for(let i = 0; i < finite.length; i++) {
       for(let j = i+1; j < finite.length; j++) {
-        let isect = intersect(finite[i], finite[j]);
-        Array.prototype.push.apply(intersections, isect)
+        Array.prototype.push.apply(intersections, intersect(finite[i], finite[j]));
       }
     }
+    intersections.forEach(function(p,i) {
+      addClass(p, 'intersection-point');
+    });
     return intersections;
   }
+
+
+  /* 
+   * initial render
+   */
+   
+  render(objects.concat(controlpoints(objects), intersections(objects)));
   
-  let update = render(svg, onDrag);
+  
+  /* 
+   * interaction
+   */
+  
+  var drag = d3.behavior.drag()
+  .origin(function(d) { return d; })
+  .on("drag", onDrag);
   
   function onDrag(d) {
+    console.log(d);
     d.x = Math.max(5, Math.min(bounds.width - 5, d3.event.x))
     d.y = Math.max(5, Math.min(bounds.height - 5, d3.event.y))
-    // console.log(d);
-    // d3.select(this)
-    // .attr("cx", d.x = Math.max(5, Math.min(bounds.width - 5, d3.event.x)))
-    // .attr("cy", d.y = Math.max(5, Math.min(bounds.height - 5, d3.event.y)));
-    update(objects.concat(intersections(objects)));
+    render(objects.concat(controlpoints(objects), intersections(objects)));
   }
   
-  update(objects.concat(intersections(objects)));
+  d3.selectAll('.control-point').call(drag);
+  
 }
 
 document.addEventListener('DOMContentLoaded', init)
