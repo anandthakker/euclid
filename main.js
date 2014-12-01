@@ -31,8 +31,8 @@ function init() {
   
   let objects = [];
   
-  objects.push(new Circle(P(300,500),300));
-  objects.push(new Circle(P(650,300),200));
+  objects.push(new Circle(P(300,500),100));
+  objects.push(new Circle(P(650,300),P(650, 450)));
   objects.push(new Segment(objects[0].center, objects[1].center));
   objects.push(new Line(P(200, 100), P(700, 600)));
   
@@ -41,6 +41,7 @@ function init() {
     let res = objects.reduce( function(res, obj) {
       if(obj instanceof Circle)
         res.push(obj.center)
+        if(obj.boundaryPoint) res.push(obj.boundaryPoint);
       else if(obj instanceof Line)
         res.push(obj._p[0], obj._p[1])
       return res;
