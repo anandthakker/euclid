@@ -24,19 +24,14 @@ function init() {
    * build the scene
    */
   
-  scene.add(P(width/7*3, height/2));
-  scene.add(P(width/7*4, height/2));
-  scene.add(new Circle(scene.P(0), scene.P(1)));
-  scene.add(new Circle(scene.P(1), scene.P(0)));
-  scene.add(new Circle(scene.P(2), scene.P(1)));
-  scene.add(new Segment(scene.P(0), scene.P(1)));
-  scene.add(new Segment(scene.P(1), scene.P(2)));
-  scene.add(new Segment(scene.P(2), scene.P(0)));
-  scene.add(new Line(scene.P(4), scene.P(1)));
-  scene.add(new Line(scene.P(5), scene.P(0)));
-  // scene.add(new Line(scene.P(3), scene.P(4)));
-  // scene.add(new Line(scene.P(4), scene.P(5)));
-  // scene.add(new Line(scene.P(5), scene.P(3)));
+  scene
+  .point(width/7*3, height/2)
+  .point(width/7*4, height/2)
+  .circle(0, 1)
+  .circle(1, 0) // adds p2, p3
+  .circle(2, 1) // adds p4, p5
+  .circle(4, 2)
+  .circle(6, 4)
   
   /* 
    * render
