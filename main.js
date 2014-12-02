@@ -4,7 +4,8 @@ let d3 = require('d3');
 let Set = require('./lib/set'),
     {P, Circle, Line, Segment} = require('./lib/geometry'),
     Scene = require('./lib/scene'),
-    renderer = require('./lib/render-d3-svg');
+    renderer = require('./lib/render'),
+    behavior = require('./lib/behavior');
     
 function init() {
   let svg = document.querySelector('svg');
@@ -20,16 +21,23 @@ function init() {
   let render = renderer(scene, svg);
   
   /* 
-   * the scene
+   * build the scene
    */
   
-  scene.add(P(width/5*2, height/2));
-  scene.add(P(width/5*3, height/2));
+  scene.add(P(width/7*3, height/2));
+  scene.add(P(width/7*4, height/2));
   scene.add(new Circle(scene.P(0), scene.P(1)));
   scene.add(new Circle(scene.P(1), scene.P(0)));
   scene.add(new Circle(scene.P(2), scene.P(1)));
-
-
+  scene.add(new Segment(scene.P(0), scene.P(1)));
+  scene.add(new Segment(scene.P(1), scene.P(2)));
+  scene.add(new Segment(scene.P(2), scene.P(0)));
+  scene.add(new Segment(scene.P(4), scene.P(1)));
+  scene.add(new Segment(scene.P(5), scene.P(0)));
+  // scene.add(new Line(scene.P(3), scene.P(4)));
+  // scene.add(new Line(scene.P(4), scene.P(5)));
+  // scene.add(new Line(scene.P(5), scene.P(3)));
+  
   /* 
    * render
    */
@@ -37,7 +45,7 @@ function init() {
   function update() {
     scene.updateIntersections();
     render();
-    console.log(scene);
+    console.log(scene.intersections());
   }
   
   update();
@@ -46,52 +54,9 @@ function init() {
    * interaction
    */
    
-  function translate(p) {
-    p.x += d3.event.dx;
-    p.y += d3.event.dy;
-  }
-  
-  let pointdrag = d3.behavior.drag()
-  .on('drag', function(d) {
-    d.x = Math.max(5, Math.min(scene.bounds.width - 5, d3.event.x))
-    d.y = Math.max(5, Math.min(scene.bounds.height - 5, d3.event.y))
-    update();
-  });
-  d3.selectAll('.free-point').call(pointdrag);
-  
-  let circledrag = d3.behavior.drag()
-  .on('drag', function(d) {
-    if(d.boundaryPoint) {
-      translate(d.center);
-      translate(d.boundaryPoint);
-    } 
-    else {
-      let dx = d.center.x - d3.event.x;
-      let dy = d.center.y - d3.event.y;
-      d.radius = Math.sqrt(dx*dx + dy*dy);
-    }
-    update();
-  })
-  d3.selectAll('.circle').call(circledrag);
-  
-  
-  let linedrag = d3.behavior.drag()
-  .on('drag', function(d) {
-    d._p.forEach(translate);
-    update();
-  })
-  d3.selectAll('.line').call(linedrag);
-  
-  function mouseover() { d3.select(this).classed('active', true); }
-  function mouseout() { d3.select(this).classed('active', false); }
-  function hover() {
-    this.on('mouseover', mouseover)
-    .on('mouseout', mouseout);
-  }
-  
-  d3.selectAll('.circle').call(hover);
-  d3.selectAll('.line').call(hover);
-  
+  d3.selectAll('.free-point').call(behavior.move.point(update));
+  d3.selectAll('.circle').call(behavior.move.circle(update));
+  d3.selectAll('.line').call(behavior.move.line(update));
 }
 
 document.addEventListener('DOMContentLoaded', init)

@@ -1,12 +1,23 @@
 
 
 svg {
+
+  height: 100vmin;
+  width: 100vmin;
+  display: block;
+  margin: 0 auto;
+  
   circle.visible {
     fill: none;
     stroke: black;
   }
   line {
     stroke: black;
+  }
+  
+  .point {
+    fill: none;
+    stroke: none;
   }
   .free-point {
     fill: blue;
