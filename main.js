@@ -1,8 +1,7 @@
 
 let d3 = require('d3');
 
-let Set = require('./lib/set'),
-    {P, Circle, Line, Segment} = require('./lib/geometry'),
+let {P, Circle, Line, Segment} = require('./lib/geometry'),
     Scene = require('./lib/scene'),
     renderer = require('./lib/render'),
     behavior = require('./lib/behavior');
