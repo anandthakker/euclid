@@ -1,22 +1,12 @@
 
 
-svg {
+.geometry-scene {
 
-  height: 100vmin;
-  width: 100vmin;
-  display: block;
-  margin: 0 auto;
-  
-  circle.visible {
-    fill: none;
-    stroke: black;
-  }
-  line {
-    stroke: black;
-  }
+  stroke: black;
+  fill: none;
   
   .point {
-    fill: none;
+    fill: none; // only until the intersection point bug is fixed...
     stroke: none;
   }
   .free-point {
@@ -33,13 +23,33 @@ svg {
 }
 
 
-@media only screen and (min-width: 35em) {
-    /* Style adjustments for viewports that meet the condition */
+#home svg {
+  height: 100vmin;
+  width: 100vmin;
+  display: block;
+  margin: 0 auto;
 }
 
-@media print,
-       (-o-min-device-pixel-ratio: 5/4),
-       (-webkit-min-device-pixel-ratio: 1.25),
-       (min-resolution: 120dpi) {
-    /* Style adjustments for high resolution devices */
+#background-example {
+  .geometry-scene {
+    /* imitate a background image */
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    margin: auto;
+    max-height: 100vh;
+    max-width: 100vw;
+    z-index: 100;
+    
+    /* color */
+    stroke: rgba(128, 160, 160, .5);
+    .free-point { fill: rgb(128, 160, 160);}
+  }
+  .content {
+    position: relative;
+    z-index: 200;
+  }
+  
 }

@@ -32,8 +32,8 @@ function init() {
   scene.add(new Segment(scene.P(0), scene.P(1)));
   scene.add(new Segment(scene.P(1), scene.P(2)));
   scene.add(new Segment(scene.P(2), scene.P(0)));
-  scene.add(new Segment(scene.P(4), scene.P(1)));
-  scene.add(new Segment(scene.P(5), scene.P(0)));
+  scene.add(new Line(scene.P(4), scene.P(1)));
+  scene.add(new Line(scene.P(5), scene.P(0)));
   // scene.add(new Line(scene.P(3), scene.P(4)));
   // scene.add(new Line(scene.P(4), scene.P(5)));
   // scene.add(new Line(scene.P(5), scene.P(3)));
