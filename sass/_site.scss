@@ -6,7 +6,7 @@
   fill: none;
   
   .point {
-    fill: none; // only until the intersection point bug is fixed...
+    fill: black; // only until the intersection point bug is fixed...
     stroke: none;
   }
   .free-point {
@@ -45,6 +45,7 @@
     
     /* color */
     stroke: rgba(128, 160, 160, .5);
+    .point { fill: white; stroke: inherit; }
     .free-point { fill: rgb(128, 160, 160);}
   }
   .content {

@@ -27,10 +27,9 @@ function init() {
   .point(width/7*3, height/2)
   .point(width/7*4, height/2)
   .circle(0, 1)
-  .circle(1, 0) // adds p2, p3
-  .circle(2, 1) // adds p4, p5
-  .circle(4, 2)
-  .circle(6, 4)
+  .circle(1, 0)
+  .circle(2, 1)
+  .circle(4, 2);
   
   /* 
    * render
@@ -39,7 +38,6 @@ function init() {
   function update() {
     scene.updateIntersections();
     render();
-    console.log(scene.intersections());
   }
   
   update();
