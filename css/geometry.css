@@ -1,0 +1,17 @@
+.geometry-scene {
+  stroke: black;
+  fill: none; }
+  .geometry-scene .point {
+    fill: black;
+    stroke: none; }
+  .geometry-scene .free-point {
+    fill: blue;
+    stroke: none;
+    cursor: pointer; }
+  .geometry-scene .handle {
+    fill: none;
+    stroke: rgba(0, 0, 0, 0);
+    stroke-width: 20; }
+  .geometry-scene .active {
+    stroke-width: 2px;
+    cursor: pointer; }

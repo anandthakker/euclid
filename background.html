@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<!--[if lt IE 9]><html class="lt-ie9"><![endif]-->
+<!--[if gt IE 8]><!--> <html> <!--<![endif]-->
+
+<!--
+construction
+https://github.com/anandthakker/euclid
+Copyright 2014 Anand Thakker.
+-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>euclid</title>
+        <meta name="description" content="Euclidean geometry in javascript.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="css/normalize.css">
+        
+        <link rel="stylesheet" href="css/geometry.css">
+        <link rel="stylesheet" href="css/examples.css">
+    </head>
+    <body>
+        <!--[if lt IE 9]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+<header>
+
+</header>
+
+<section id="background-example">
+  
+  <svg class="geometry-scene" viewbox="0 0 800 800">
+  </svg>
+  
+  <div class="content">
+    <h1>Title of my awesome page.</h1>
+    It is required to construct an equilateral triangle on the straight line AB.
+    I.Post.3 
+    I.Post.1
+    Describe the circle BCD with center A and radius AB. Again describe the circle ACE with center B and radius BA. Join the straight lines CA and CB from the point C at which the circles cut one another to the points A and B.
+    I.Def.15
+    Now, since the point A is the center of the circle CDB, therefore AC equals AB. Again, since the point B is the center of the circle CAE, therefore BC equals BA.
+    But AC was proved equal to AB, therefore each of the straight lines AC and BC equals AB.
+    C.N.1
+    And things which equal the same thing also equal one another, therefore AC also equals BC.
+    Therefore the three straight lines AC, AB, and BC equal one another.
+    I.Def.20
+    Therefore the triangle ABC is equilateral, and it has been constructed on the given finite straight line AB.
+  </div>
+</section>
+
+<script charset="utf-8">
+function init() {
+  var Scene = geom.Scene;
+  
+  var svg = document.querySelector('svg');
+  var viewBox = svg.viewBox.baseVal,
+  width = viewBox.width,
+  height = viewBox.height;
+  var scene = new Scene({
+    width: width,
+    height: height,
+    left: viewBox.x,
+    top: viewBox.y,
+    right: viewBox.x + width,
+    bottom: viewBox.y + height
+  })
+  var render = geom.renderer(scene, svg);
+  
+  scene
+  .point(width/7*3, height/2)
+  .point(width/7*4, height/2)
+  .circle(0, 1)
+  .circle(1, 0)
+  .circle(2, 0)
+  .circle(4, 0)
+  .circle(6, 0)
+  .circle(8, 0)
+  .circle(3, 0)
+  .group('hex')
+  .segment(1,2)
+  .segment(2,4)
+  .segment(4,6)
+  .segment(6,8)
+  .segment(8,3)
+  .segment(3,1)
+  
+  function update() {
+    scene.updateIntersections();
+    render();
+    d3.selectAll('.free-point').call(geom.behavior.move.point(update));
+    d3.selectAll('.circle').call(geom.behavior.move.circle(update));
+    d3.selectAll('.line').call(geom.behavior.move.line(update));
+  }
+  
+  geom.behavior.follow(svg, scene.P(1), update);
+  
+  update();
+}
+
+document.addEventListener('DOMContentLoaded', init)
+</script>
+<footer>
+
+</footer>
+
+        <script src="js/vendor/d3.min.js"></script>
+        <script src="js/vendor/lodash.min.js"></script>
+        <script src="js/geometry.js"></script>
+  </body>
+</html>
