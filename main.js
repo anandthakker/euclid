@@ -28,8 +28,11 @@ function init() {
   .point(width/7*4, height/2)
   .circle(0, 1)
   .circle(1, 0)
-  .circle(2, 1)
-  .circle(4, 2);
+  .circle(2, 0)
+  .circle(4, 0)
+  .circle(6, 0)
+  .circle(8, 0)
+  .circle(3, 0);
   
   /* 
    * render
