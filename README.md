@@ -1,6 +1,7 @@
 # Euclid
 
 Euclidean geometry in javascript.
+[Here's](http://anandthakker.github.io/euclid/) a demo; [here's](http://anandthakker.github.io/euclid/background.html) another one.
 
 **NOTE:** Still very preliminary / experimental.
 
@@ -44,7 +45,7 @@ loaded already).
 
 And then 
 ``` javascript
-var scene = new Scene({
+var scene = new geom.Scene({
   left: 0,
   top: 0,
   right: 1000,
