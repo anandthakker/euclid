@@ -1,50 +1,80 @@
+# Euclid
 
-# Setup
+Euclidean geometry in javascript.
 
-Install [Node.js][1] then:
+**NOTE:** Still very preliminary / experimental.
 
 ```bash
-git clone [this repo]
-cd [this repo dir]
+git clone https://github.com/anandthakker/euclid.git
+cd euclid
 npm install
+gulp
 ```
 
-# Development
+# Usage
 
-In the project folder: 
-```bash
-./gulp
+### Load It:
+
+Add `dist/geometry.css` for the basic SVG styles.
+```html
+<link rel="stylesheet" href="geometry.css">
 ```
 
-This will start watching the files and pop open a browser pointed at the local
-copy of the site.  Changes you make to the source files will prompt any browsers
-you have pointed at it to reload via [browserSync][2].
-
-# Production
-
-To build for production:
-```bash
-./gulp build
+Put an `<svg>` element somewhere.
+```html
+<svg class="geometry-scene" viewbox="0 0 800 800"></svg>
 ```
 
-The built site will be under the `build` directory.
+Pull in the javascript, either as a node module...
 
-# Source Files
+```javascript
+var geom = require('euclid');
+```
 
-- *site-footer.html*, *site-header.html*: common header and footer for every page.
-- *h5bp-footer.html*, *h5bp-header.html*: [HTML5Boilerplate (h5bp)][3] stuff for every page.
-- *html/* - HTML file structure.  Every .html file in here gets wrapped up in the
-  aforementioned headers and footers.
-- *sass/*
-  - *_site.scss* - overall site styles
-  - *pages/* - per-page styles
-  - *_helpers.scss* - handy mixins and placeholders
-  - *normalize.scss* - CSS reset from [h5bp][3]
-  - *_base.scss* - some base styles (essentially a further reset on top of `normalize`)
-- *js/main.js* - site-specific js.
-- *js/plugins.js* - copy-pasted js plugins.
-- *vendor/* - 3rd-party code/assets (e.g., jquery, modernizr, etc)
+or a browser standalone(ish) script (depends on `d3` and `lodash` to be 
+loaded already).
 
-[1]: http://nodejs.org/download/
-[2]: http://www.browsersync.io/
-[3]: http://html5boilerplate.com/
+```html
+<script src="js/vendor/d3.min.js"></script>
+<script src="js/vendor/lodash.min.js"></script>
+<script src="js/geometry.js"></script> <!-- exposes geom as a global -->
+```
+
+### Use It:
+
+And then 
+``` javascript
+var scene = new Scene({
+  left: 0,
+  top: 0,
+  right: 1000,
+  bottom: 1000
+});
+  
+scene.point(width/7*3, height/2) // add a couple of free points.
+  .point(width/7*4, height/2)
+  // add circle centered at point 0, with point 1 on its circumference.
+  .circle(0, 1)
+  .circle(1, 0)
+  // now that two overlapping circles exist, their intersections are in the
+  // scene as points 2 and 3.
+  .circle(2, 0)
+  .circle(4, 0)
+  .circle(6, 0)
+  .circle(8, 0)
+  .circle(3, 0)
+  // tag subsequent objects with string 'hex', used by renderer to add
+  // arbitrary classes to svg objects.
+  .group('hex')
+  .segment(1,2)
+  .segment(2,4)
+  .segment(4,6)
+  .segment(6,8)
+  .segment(8,3)
+  .segment(3,1)
+
+
+// render using d3.
+var render = geom.renderer(scene, document.querySelector('svg'));
+render();
+```

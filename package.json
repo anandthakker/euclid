@@ -2,10 +2,14 @@
   "name": "construction",
   "version": "1.0.0",
   "author": "Anand Thakker",
-  "title": "COMMON TITLE FOR HTML PAGES",
-  "description": "DESCRIPTION FOR HTML PAGES",
-  "url": "http://anandthakker.net",
-  "license": "n/a",
+  "title": "euclid",
+  "description": "Euclidean geometry in javascript.",
+  "url": "https://github.com/anandthakker/euclid",
+  "repository" : {
+      "type" : "git",
+      "url" : "https://github.com/anandthakker/euclid.git"
+  },
+  "license": "MIT",
   "main": "index.js",
   "browserify": {
     "transform": [

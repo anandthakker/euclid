@@ -3,11 +3,14 @@ fs = require('fs')
 path = require('path')
 
 gulp = require('gulp')
+pkg = require('./package.json')
+
 clean = require('gulp-clean')
 header  = require('gulp-header')
 footer = require('gulp-footer')
 rename = require('gulp-rename')
 source = require('vinyl-source-stream')
+
 # js
 browserify = require('browserify')
 shim = require('browserify-shim')
@@ -17,10 +20,10 @@ to5 = require('6to5-browserify')
 sass = require('gulp-sass')
 autoprefixer = require('gulp-autoprefixer')
 minifycss = require('gulp-minify-css')
+
 ### preview ###
 browserSync = require('browser-sync')
 
-pkg = require('./package.json')
 
 # Source and build paths.
 paths=
@@ -28,8 +31,7 @@ paths=
   js: 'lib/**/*.js'
   vendorjs: 'vendor/**/*.js'
   html: 'html/**/*.html'
-  assets: 'assets'
-  build: 'build'
+  build: 'dist'
 paths.dest=
   css: path.join(paths.build, 'css')
   vendorjs: path.join(paths.build, 'js', 'vendor')
@@ -48,11 +50,6 @@ htmlFooter = fs.readFileSync('h5bp-footer.html').toString('utf8')
 # Site header and footer
 siteHeader = fs.readFileSync('site-header.html').toString('utf8')
 siteFooter = fs.readFileSync('site-footer.html').toString('utf8')
-
-gulp.task 'copy', ->
-  gulp.src(paths.assets+'/**/*', base: paths.assets)
-  .pipe gulp.dest(paths.build)
-  .pipe browserSync.reload({stream: true})
   
 gulp.task 'clean', ->
   gulp.src(paths.build, {read: false})
@@ -103,17 +100,16 @@ gulp.task 'bs-init', ->
     server:
       baseDir: paths.build
       
-gulp.task('buildall', ['sass', 'js', 'html', 'copy'], ->)
+gulp.task('buildall', ['sass', 'js', 'html'], ->)
 
 gulp.task('build', ['clean'], ->
   gulp.start 'buildall'
 )
 
-gulp.task('default', ['sass', 'js', 'html', 'copy', 'bs-init'], ->
+gulp.task('default', ['sass', 'js', 'html', 'bs-init'], ->
   gulp.watch(paths.sass, ['sass'])
   gulp.watch([paths.js, './index.js'], ['js'])
   gulp.watch(paths.html, ['html'])
-  gulp.watch(paths.assets+'/**/*', ['copy'])
 )
   
   
