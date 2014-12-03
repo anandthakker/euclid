@@ -10,7 +10,9 @@ rename = require('gulp-rename')
 source = require('vinyl-source-stream')
 # js
 browserify = require('browserify')
+shim = require('browserify-shim')
 to5 = require('6to5-browserify')
+
 # css
 sass = require('gulp-sass')
 autoprefixer = require('gulp-autoprefixer')
@@ -83,16 +85,16 @@ gulp.task 'js', (cb)->
   .pipe gulp.dest(paths.dest.vendorjs)
   .pipe browserSync.reload({stream: true, once: true})
   
-  browserify(debug: true)
-  .transform(to5)
-  .add('./main.js')
+  browserify(debug: false, standalone: 'geom')
+  .external(['d3', 'lodash'])
+  .add('.')
   .bundle()
   .on('error', (err)->
     console.error("Error", err)
     cb()
     this.emit('end')
   )
-  .pipe(source('main.js'))
+  .pipe(source('geometry.js'))
   .pipe gulp.dest(paths.dest.js)
   .pipe browserSync.reload({stream: true, once: true})
   
@@ -109,7 +111,7 @@ gulp.task('build', ['clean'], ->
 
 gulp.task('default', ['sass', 'js', 'html', 'copy', 'bs-init'], ->
   gulp.watch(paths.sass, ['sass'])
-  gulp.watch([paths.js, './main.js'], ['js'])
+  gulp.watch([paths.js, './index.js'], ['js'])
   gulp.watch(paths.html, ['html'])
   gulp.watch(paths.assets+'/**/*', ['copy'])
 )

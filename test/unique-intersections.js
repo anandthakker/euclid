@@ -1,7 +1,7 @@
 'use strict'
 
 let test = require('tape');
-let {P, Circle, Line, Segment} = require('../lib/geometry'),
+let {P, Circle, Line, Segment} = require('../lib/model'),
     {Intersection} = require('../lib/intersection'),
     Scene = require('../lib/scene');
 

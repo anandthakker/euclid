@@ -3,3 +3,56 @@
   <svg class="geometry-scene" viewbox="0 0 800 800">
   </svg>
 </section>
+
+<script charset="utf-8">
+
+function init() {
+  var Scene = geom.Scene;
+  
+  var svg = document.querySelector('svg');
+  var viewBox = svg.viewBox.baseVal,
+      width = viewBox.width,
+      height = viewBox.height;
+  var scene = new Scene({
+    width: width,
+    height: height,
+    left: viewBox.x,
+    top: viewBox.y,
+    right: viewBox.x + width,
+    bottom: viewBox.y + height
+  })
+  var render = geom.renderer(scene, svg);
+  
+  scene
+  .point(width/7*3, height/2)
+  .point(width/7*4, height/2)
+  .circle(0, 1)
+  .circle(1, 0)
+  .circle(2, 0)
+  .circle(4, 0)
+  .circle(6, 0)
+  .circle(8, 0)
+  .circle(3, 0)
+  .group('hex')
+  .segment(1,2)
+  .segment(2,4)
+  .segment(4,6)
+  .segment(6,8)
+  .segment(8,3)
+  .segment(3,1)
+  
+  function update() {
+    scene.updateIntersections();
+    render();
+    d3.selectAll('.free-point').call(geom.behavior.move.point(update));
+    d3.selectAll('.circle').call(geom.behavior.move.circle(update));
+    d3.selectAll('.line').call(geom.behavior.move.line(update));
+  }
+  
+  geom.behavior.follow(svg, scene.P(1), update);
+  
+  update();
+}
+
+document.addEventListener('DOMContentLoaded', init)
+</script>
