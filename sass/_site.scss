@@ -47,6 +47,7 @@
     stroke: rgba(128, 160, 160, .5);
     .point { fill: white; stroke: inherit; }
     .free-point { fill: rgb(128, 160, 160);}
+    .hex { stroke: rgba(160, 100, 50, .5); }
   }
   .content {
     position: relative;

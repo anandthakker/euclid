@@ -19,10 +19,6 @@ function init() {
   })
   let render = renderer(scene, svg);
   
-  /* 
-   * build the scene
-   */
-  
   scene
   .point(width/7*3, height/2)
   .point(width/7*4, height/2)
@@ -32,26 +28,29 @@ function init() {
   .circle(4, 0)
   .circle(6, 0)
   .circle(8, 0)
-  .circle(3, 0);
+  .circle(3, 0)
+  .group('hex')
+  .segment(1,2)
+  .segment(2,4)
+  .segment(4,6)
+  .segment(6,8)
+  .segment(8,3)
+  .segment(3,1)
   
-  /* 
-   * render
-   */
-   
   function update() {
     scene.updateIntersections();
     render();
+    d3.selectAll('.free-point').call(behavior.move.point(update));
+    d3.selectAll('.circle').call(behavior.move.circle(update));
+    d3.selectAll('.line').call(behavior.move.line(update));
   }
+
+
+  behavior.follow(svg, scene.P(1), update);
   
   update();
   
-  /* 
-   * interaction
-   */
-   
-  d3.selectAll('.free-point').call(behavior.move.point(update));
-  d3.selectAll('.circle').call(behavior.move.circle(update));
-  d3.selectAll('.line').call(behavior.move.line(update));
+
 }
 
 document.addEventListener('DOMContentLoaded', init)
