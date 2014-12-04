@@ -1,14 +1,13 @@
 
+body > * {
+  max-width: 1000px;
+  margin: 0 auto;
+}
 
 #home svg {
-  height: 100vmin;
-  width: 100vmin;
+  max-width: 50%;
   display: block;
-  float: left;
-}
-#home #scene-data {
   float: right;
-  width: 600px;
 }
 
 #background-example {
