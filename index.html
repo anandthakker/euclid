@@ -24,12 +24,31 @@ Copyright 2014 Anand Thakker.
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 <header>
-
+  <h1>Euclid JS</h1>
+  <p><a href="https://github.com/anandthakker/euclid">View on Github</a></p>
 </header>
 
 <section id="home">
   <svg class="geometry-scene" viewbox="0 0 800 800">
   </svg>
+  
+  <p>This construction to trisect a line segment comes from <cite>Proofs Without Words</cite> by
+    Scott Coble, via <a href="http://www41.homepage.villanova.edu/robert.styer/trisecting%20segment/">this page</a>.
+    The code looks like this:
+    <pre>
+      scene
+      .point(width/7*3, height/3)
+      .point(width/7*5, height/3)
+      .segment(0,1)
+      .circle(0,1)
+      .circle(1,0)
+      .line(0,2)
+      .segment(0,3)
+      .segment(4,1)
+      .segment(2,6)
+    </pre>
+  </p>
+  <p>Also check out <a href="background.html">this one</a>.</p>
 </section>
 
 <script charset="utf-8">
@@ -50,22 +69,17 @@ function init() {
   var render = geom.renderer(scene, svg);
   
   scene
-  .point(width/7*3, height/2)
-  .point(width/7*4, height/2)
-  .circle(0, 1)
-  .circle(1, 0)
-  .circle(2, 0)
-  .circle(4, 0)
-  .circle(6, 0)
-  .circle(8, 0)
-  .circle(3, 0)
-  .group('hex')
-  .segment(1,2)
-  .segment(2,4)
-  .segment(4,6)
-  .segment(6,8)
-  .segment(8,3)
-  .segment(3,1)
+  .point(width/7*3, height/3)
+  .point(width/7*5, height/3)
+  .segment(0,1)
+  .circle(0,1)
+  .circle(1,0)
+  .line(0,2)
+  .segment(0,3)
+  .segment(4,1)
+  .segment(2,6)
+  
+
   
   function update() {
     scene.updateIntersections();
@@ -75,7 +89,6 @@ function init() {
     d3.selectAll('.line').call(geom.behavior.move.line(update));
   }
   
-  geom.behavior.follow(svg, scene.P(1), update);
   
   update();
 }

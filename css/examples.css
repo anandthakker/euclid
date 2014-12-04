@@ -133,15 +133,14 @@ textarea {
  * For IE 6/7 only
  * Include this rule to trigger hasLayout and contain floats.
  */
-#home svg {
-  height: 100vmin;
-  width: 100vmin;
-  display: block;
-  float: left; }
+body > * {
+  max-width: 1000px;
+  margin: 0 auto; }
 
-#home #scene-data {
-  float: right;
-  width: 600px; }
+#home svg {
+  max-width: 50%;
+  display: block;
+  float: right; }
 
 #background-example .geometry-scene {
   /* imitate a background image */
