@@ -540,7 +540,9 @@ var Segment = (function (Line) {
           p2 = P(bottom, bounds.bottom);
         }
 
-        return new Segment(p1, p2);
+        var clipped = new Segment(p1, p2);
+        clipped.parent = line;
+        return clipped;
       }
     }
   }, {
@@ -748,6 +750,8 @@ var Scene = (function () {
     this._objects = [];
     this._intersections = d3.map();
     this.equal = equalWithin(Math.sqrt(2));
+
+    this.log = [];
   };
 
   _classProps(Scene, null, {
@@ -780,6 +784,13 @@ var Scene = (function () {
         return [].concat(this._objects);
       }
     },
+    index: {
+      writable: true,
+      value: function (obj) {
+        var i = this._objects.indexOf(obj);
+        if (i < 0 && obj.parent) return this.index(obj.parent);else return i;
+      }
+    },
     contains: {
       writable: true,
 
@@ -796,7 +807,9 @@ var Scene = (function () {
     add: {
       writable: true,
       value: function (object) {
-        if (this.contains(object)) return this;
+        if (this.contains(object)) {
+          return this;
+        }
 
         this._objects.push(object);
         if (this._currentTag) addClass(object, this._currentTag);
@@ -843,10 +856,15 @@ var Scene = (function () {
       writable: true,
       value: function () {
         var _this2 = this;
-        var key = function (intersection) {
+        // key for the _intersections map, which we use to identify Intersection
+        // objects as equivalent between updates (so that we can mutate rather
+        // than replace them).  Would be nice to do this with immutable approach,
+        // but we'd then need to keep a tree of dependent shapes -- e.g., a
+        // circle is centered on an intersection point.
+        var mapkey = function (intersection, index) {
           return intersection.objects.map(function (o) {
-            return _this2._objects.indexOf(o);
-          }).join(":") + "[" + intersection._index + "]";
+            return _this2.index(o);
+          }).join(":") + "[" + index + "]";
         };
 
         var finite = this._objects.filter(function (obj) {
@@ -854,45 +872,51 @@ var Scene = (function () {
         }).map(function (obj) {
           return (obj instanceof Line) ? Segment.clip(_this2.bounds, obj) : obj;
         });
-
-        var newIntersections = [];
+        var updated = [];
         for (var i = 0; i < finite.length; i++) {
           for (var j = 0; j < i; j++) {
             (function () {
+              // calculate intersections for this pair of points.
               var _points = intersect(finite[i], finite[j]);
+
+              // could have more than one intersection; process each one.
               _points.forEach(function (p, k) {
-                p._index = k; // TODO: Clean up this hack. (See below for usage.)
+                var key = mapkey(p, k);
+
+                // "Snap" coordinates to the first existing point that is indistinguishable.
                 _this2._snapPoint(p);
-                newIntersections.push(p);
+
+                // update existing or add new intersection.
+                if (_this2._intersections.has(key)) {
+                  _.assign(_this2._intersections.get(key), p);
+                } else {
+                  _this2._intersections.set(key, p);
+                  p._mapkey = key;
+                  _this2.add(p);
+                }
+
+                updated.push(key);
               });
             })();
           }
         }
-
-        var newKeys = newIntersections.map(function (i) {
-          return key(i);
-        });
-        for (var i = 0; i < newIntersections.length; i++) {
-          if (this._intersections.has(newKeys[i])) {
-            // update existing intersections
-            _.assign(this._intersections.get(newKeys[i]), newIntersections[i]);
-          } else {
-            // add new ones
-            this._intersections.set(newKeys[i], newIntersections[i]);
-            this.add(newIntersections[i]);
-          }
-        }
+        // console.log('updated:', updated);
+        // console.log('map:', this._intersections.keys());
+        // console.log('scene:', this._objects
+        //   .filter(o=>o instanceof Intersection).map(o=>o._mapkey));
+        //  
         // remove stale ones from the map
-        if (newIntersections.length < this._intersections.size()) {
-          this._intersections.keys().forEach(function (k) {
-            if (newKeys.indexOf(k) < 0) {
-              _this2._intersections.remove(k);
-            }
+        if (updated.length < this._intersections.size()) {
+          this._intersections.keys().filter(function (key) {
+            return updated.indexOf(key) < 0;
+          }).forEach(function (key) {
+            return _this2._intersections.remove(key);
           });
         }
+
         // remove stale ones from the scene
         this._objects = this._objects.filter(function (o) {
-          return !(o instanceof Intersection) || _this2._intersections.has(key(o));
+          return !(o instanceof Intersection) || _this2._intersections.has(o._mapkey);
         });
 
         this._intersections.values().forEach(function (p, i) {
@@ -911,6 +935,34 @@ var Scene = (function () {
             return;
           }
         }
+      }
+    },
+    logState: {
+      writable: true,
+      value: function (label) {
+        var self = this;
+        var _objects = this._objects;
+        var _points3 = this.points();
+
+        function print(object, short) {
+          var n = "[" + self.index(object) + "]";
+
+          if (object instanceof Point) return n + (short ? "" : (object.toString() + (object.objects || []).map(function (o) {
+            return self.index(o);
+          }).join(",")));else if (object instanceof Circle) return n + "circle(" + print(object.center, true) + " - " + print(object.boundaryPoint, true) + ")";else if (object instanceof Line) return n + ((object instanceof Segment) ? "segment" : "line") + "(" + print(object._p[0], true) + " - " + print(object._p[1], true) + ")";
+
+          return object.toString();
+        }
+
+        var state = {
+          label: label,
+          time: (new Date()).toString(),
+          objects: _objects.map(function (o) {
+            return print(o);
+          }),
+          intersections: this._intersections.keys()
+        };
+        this.log.push(state);
       }
     }
   });
