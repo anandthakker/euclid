@@ -1,13 +1,13 @@
 {
   "name": "euclid",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Anand Thakker",
   "title": "euclid",
   "description": "Euclidean geometry in javascript.",
   "url": "https://github.com/anandthakker/euclid",
-  "repository" : {
-      "type" : "git",
-      "url" : "https://github.com/anandthakker/euclid.git"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anandthakker/euclid.git"
   },
   "license": "MIT",
   "main": "index.js",
