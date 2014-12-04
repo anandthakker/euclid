@@ -747,10 +747,11 @@ var Scene = (function () {
     this.bounds = bounds;
     this.bounds.width = this.bounds.right - this.bounds.left;
     this.bounds.height = this.bounds.bottom - this.bounds.top;
-    this._objects = [];
+
+    this._lastSceneId = 0;
+    this._objects = d3.map();
     this._intersections = d3.map();
     this.equal = equalWithin(Math.sqrt(2));
-
     this.log = [];
   };
 
@@ -770,7 +771,7 @@ var Scene = (function () {
 
       /* return an array of all Points in the scene */
       value: function () {
-        return this._objects.filter(function (o) {
+        return this._objects.values().filter(function (o) {
           return o instanceof Point;
         });
       }
@@ -781,14 +782,7 @@ var Scene = (function () {
 
       /* return an array of all objects in the scene */
       value: function () {
-        return [].concat(this._objects);
-      }
-    },
-    index: {
-      writable: true,
-      value: function (obj) {
-        var i = this._objects.indexOf(obj);
-        if (i < 0 && obj.parent) return this.index(obj.parent);else return i;
+        return this._objects.values();
       }
     },
     contains: {
@@ -799,7 +793,7 @@ var Scene = (function () {
       (i.e. deep) equality rather than reference ===. */
       value: function (obj) {
         var _this = this;
-        return this._objects.some(function (p) {
+        return this._objects.values().some(function (p) {
           return _this.equal(p, obj);
         });
       }
@@ -811,7 +805,8 @@ var Scene = (function () {
           return this;
         }
 
-        this._objects.push(object);
+        object._sceneId = this._lastSceneId++;
+        this._objects.set(object._sceneId, object);
         if (this._currentTag) addClass(object, this._currentTag);
         if (!(object instanceof Point)) {
           this.updateIntersections();
@@ -861,13 +856,16 @@ var Scene = (function () {
         // than replace them).  Would be nice to do this with immutable approach,
         // but we'd then need to keep a tree of dependent shapes -- e.g., a
         // circle is centered on an intersection point.
+        var objectId = function (o) {
+          return (!o._sceneId && o.parent) ? objectId(o.parent) : o._sceneId;
+        };
         var mapkey = function (intersection, index) {
           return intersection.objects.map(function (o) {
-            return _this2.index(o);
-          }).join(":") + "[" + index + "]";
+            return objectId(o);
+          }).sort().join(":") + "[" + index + "]";
         };
 
-        var finite = this._objects.filter(function (obj) {
+        var finite = this._objects.values().filter(function (obj) {
           return !(obj instanceof Point);
         }).map(function (obj) {
           return (obj instanceof Line) ? Segment.clip(_this2.bounds, obj) : obj;
@@ -891,7 +889,7 @@ var Scene = (function () {
                   _.assign(_this2._intersections.get(key), p);
                 } else {
                   _this2._intersections.set(key, p);
-                  p._mapkey = key;
+                  p._intersectionMapKey = key;
                   _this2.add(p);
                 }
 
@@ -900,11 +898,7 @@ var Scene = (function () {
             })();
           }
         }
-        // console.log('updated:', updated);
-        // console.log('map:', this._intersections.keys());
-        // console.log('scene:', this._objects
-        //   .filter(o=>o instanceof Intersection).map(o=>o._mapkey));
-        //  
+
         // remove stale ones from the map
         if (updated.length < this._intersections.size()) {
           this._intersections.keys().filter(function (key) {
@@ -915,8 +909,10 @@ var Scene = (function () {
         }
 
         // remove stale ones from the scene
-        this._objects = this._objects.filter(function (o) {
-          return !(o instanceof Intersection) || _this2._intersections.has(o._mapkey);
+        this._objects.values().filter(function (o) {
+          return (o instanceof Intersection) && !_this2._intersections.has(o._intersectionMapKey);
+        }).forEach(function (point) {
+          return _this2._objects.remove(point._sceneId);
         });
 
         this._intersections.values().forEach(function (p, i) {
@@ -941,14 +937,14 @@ var Scene = (function () {
       writable: true,
       value: function (label) {
         var self = this;
-        var _objects = this._objects;
+        var _objects = this._objects.values();
         var _points3 = this.points();
 
         function print(object, short) {
-          var n = "[" + self.index(object) + "]";
+          var n = "[" + object._sceneId + "]";
 
           if (object instanceof Point) return n + (short ? "" : (object.toString() + (object.objects || []).map(function (o) {
-            return self.index(o);
+            return o._sceneId;
           }).join(",")));else if (object instanceof Circle) return n + "circle(" + print(object.center, true) + " - " + print(object.boundaryPoint, true) + ")";else if (object instanceof Line) return n + ((object instanceof Segment) ? "segment" : "line") + "(" + print(object._p[0], true) + " - " + print(object._p[1], true) + ")";
 
           return object.toString();
