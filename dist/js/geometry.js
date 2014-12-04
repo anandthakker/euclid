@@ -801,7 +801,7 @@ var Scene = (function () {
     add: {
       writable: true,
       value: function (object) {
-        if (this.contains(object)) {
+        if (this._objects.has(object._sceneId) || this.contains(object)) {
           return this;
         }
 
@@ -885,14 +885,16 @@ var Scene = (function () {
                 _this2._snapPoint(p);
 
                 // update existing or add new intersection.
-                if (_this2._intersections.has(key)) {
-                  _.assign(_this2._intersections.get(key), p);
+                var existing = _this2._intersections.get(key);
+                if (existing) {
+                  _.assign(existing, p);
+                  p = existing;
                 } else {
                   _this2._intersections.set(key, p);
                   p._intersectionMapKey = key;
-                  _this2.add(p);
                 }
 
+                _this2.add(p);
                 updated.push(key);
               });
             })();
