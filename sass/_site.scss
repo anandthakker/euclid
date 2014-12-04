@@ -4,7 +4,11 @@
   height: 100vmin;
   width: 100vmin;
   display: block;
-  margin: 0 auto;
+  float: left;
+}
+#home #scene-data {
+  float: right;
+  width: 600px;
 }
 
 #background-example {
