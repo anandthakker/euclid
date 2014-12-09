@@ -32,12 +32,11 @@ Pull in the javascript, either as a node module...
 var geom = require('euclid');
 ```
 
-or a browser standalone(ish) script (depends on `d3` and `lodash` to be 
+or a browser standalone(ish) script (depends on `d3` to be 
 loaded already).
 
 ```html
 <script src="js/vendor/d3.min.js"></script>
-<script src="js/vendor/lodash.min.js"></script>
 <script src="js/geometry.js"></script> <!-- exposes geom as a global -->
 ```
 

@@ -83,7 +83,7 @@ gulp.task 'js', (cb)->
   .pipe browserSync.reload({stream: true, once: true})
   
   browserify(debug: false, standalone: 'geom')
-  .external(['d3', 'lodash'])
+  .external(['d3'])
   .add('.')
   .bundle()
   .on('error', (err)->
