@@ -22,7 +22,8 @@
   },
   "dependencies": {
     "d3": "^3.4.13",
-    "uniq": "^1.0.1"
+    "uniq": "^1.0.1",
+    "walk-dag": "^0.0.2"
   },
   "devDependencies": {
     "6to5": "^1.14.17",

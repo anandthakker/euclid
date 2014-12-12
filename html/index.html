@@ -40,16 +40,13 @@ function init() {
   var render = geom.renderer(scene, svg);
   
   scene
-  .point(width/7*3, height/3)
-  .point(width/7*5, height/3)
-  .segment(0,1)
-  .circle(0,1)
-  .circle(1,0)
-  .line(0,2)
-  .segment(0,3)
-  .segment(4,1)
-  .segment(2,6)
+  .point('A', width/7*3, height/3)
+  .point('B', width/7*5, height/3)
+  .segment('A','B')
+  .circle('A', 'B')
+  .circle('B', 'A')
   
+  console.log(scene._objects.values());
 
   
   function update() {
