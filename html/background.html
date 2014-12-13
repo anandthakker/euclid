@@ -63,7 +63,7 @@ function init() {
   .segment('p2', 'p1')
   
   function update() {
-    scene.updateIntersections();
+    scene.update();
     render();
     d3.selectAll('.free-point').call(geom.behavior.move.point(update));
     d3.selectAll('.circle').call(geom.behavior.move.circle(update));

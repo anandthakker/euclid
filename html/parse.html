@@ -1,0 +1,66 @@
+
+<section id="parse">
+  <div class="text">
+    <div class="message">
+    </div>
+    <textarea rows="10" cols="55">
+Let a = (100, 100).
+Let b = (500, 100).
+Let c = (300, 200).
+Let s be a segment with endpoints a and b.
+Let t be a segment with endpoints b and c.
+Let u be a segment from a to c.
+    </textarea>
+  </div>
+  <svg class="geometry-scene" viewbox="0 0 800 800">
+  </svg>
+</section>
+
+<script charset="utf-8">
+
+function init() {
+  var Scene = geom.Scene;
+  
+  var svg = document.querySelector('svg');
+  var viewBox = svg.viewBox.baseVal,
+  width = viewBox.width,
+  height = viewBox.height;
+  var scene = new Scene({
+    left: viewBox.x,
+    top: viewBox.y,
+    right: viewBox.x + width,
+    bottom: viewBox.y + height
+  })
+  var render = geom.renderer(scene, svg);
+  
+  var text = document.querySelector('textarea');
+  var message = document.querySelector('.message');
+  text.addEventListener('keyup', parse);
+  function parse() { scene.parse(text.value.trim(), onparsed); }
+  function onparsed(res, err) {
+    if(err) {
+      message.innerText = err.line + ':' + err.column + ': ' + err.message;
+      console.log(err);
+    }
+    else {
+      message.innerText = '';
+      update();
+    }
+  }
+  
+  parse();
+
+  
+  function update() {
+    scene.update();
+    render();
+    d3.selectAll('.free-point').call(geom.behavior.move.point(update));
+    d3.selectAll('.circle').call(geom.behavior.move.circle(update));
+    d3.selectAll('.line').call(geom.behavior.move.line(update));
+  }
+  
+  update();
+}
+
+document.addEventListener('DOMContentLoaded', init)
+</script>

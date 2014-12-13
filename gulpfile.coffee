@@ -82,7 +82,7 @@ gulp.task 'js', (cb)->
   .pipe gulp.dest(paths.dest.vendorjs)
   .pipe browserSync.reload({stream: true, once: true})
   
-  browserify(debug: false, standalone: 'geom')
+  browserify(debug: true, standalone: 'geom')
   .external(['d3'])
   .add('.')
   .bundle()

@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "d3": "^3.4.13",
+    "euclid-parser": "^1.0.1",
     "uniq": "^1.0.1",
     "walk-dag": "^0.0.2"
   },
