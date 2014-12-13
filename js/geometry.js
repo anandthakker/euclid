@@ -9,7 +9,7 @@ module.exports = {
   behavior: require("./lib/behavior")
 };
 
-},{"./lib/behavior":2,"./lib/intersection":4,"./lib/model":5,"./lib/render":11,"./lib/scene":12}],2:[function(require,module,exports){
+},{"./lib/behavior":2,"./lib/intersection":4,"./lib/model":5,"./lib/render":12,"./lib/scene":13}],2:[function(require,module,exports){
 (function (global){
 "use strict";
 
@@ -116,29 +116,8 @@ function distanceSquared(p1, p2) {
 },{}],4:[function(require,module,exports){
 "use strict";
 
-var _slice = Array.prototype.slice;
-var _applyConstructor = function (Constructor, args) {
-  var instance = Object.create(Constructor.prototype);
-
-  var result = Constructor.apply(instance, args);
-
-  return result != null && (typeof result == "object" || typeof result == "function") ? result : instance;
-};
-
 var _toArray = function (arr) {
   return Array.isArray(arr) ? arr : Array.from(arr);
-};
-
-var _extends = function (child, parent) {
-  child.prototype = Object.create(parent.prototype, {
-    constructor: {
-      value: child,
-      enumerable: false,
-      writable: true,
-      configurable: true
-    }
-  });
-  child.__proto__ = parent;
 };
 
 var uniq = require("uniq");
@@ -149,65 +128,35 @@ var Point = _ref.Point;
 var Line = _ref.Line;
 var Segment = _ref.Segment;
 var Circle = _ref.Circle;
+var P = Point.P;
 var dd = require("./calc").distanceSquared;
 
 
-
-/* subclass of Point for representing object intersection */
-var Intersection = (function (Point) {
-  var Intersection = function Intersection(name, x, y) {
-    var objects = _slice.call(arguments, 3);
-
-    Point.call(this, name, x, y);
-    this.objects = objects;
-    this.free = false;
-  };
-
-  _extends(Intersection, Point);
-
-  Intersection.prototype.toString = function (verbose) {
-    var pstr = Point.prototype.toString.call(this);
-    return (!verbose) ? pstr : pstr + " objects:" + this.objects.map(function (o) {
-      return o.toString();
-    }).join(",");
-  };
-
-  return Intersection;
-})(Point);
-
-
-
-
 /* helpers */
-
-// shorthand for constructing an intersection point.
-function P(index, x, y) {
-  var objects = _slice.call(arguments, 3);
-
-  var name = "Intersection(" + objects.map(function (o) {
-    return o.name;
-  }).join(",") + ")[" + index + "]";
-  return _applyConstructor(Intersection, [name, x, y].concat(_toArray(objects)));
-}
-
 function comparePoints(p, q) {
   return (p.x === q.x && p.y === q.y) ? 0 : 1;
 }
-
 function sq(a) {
   return a * a;
 }
-
 
 /*
   Intersection of two objects; returns an array, possibly empty, of 
   intersection points.
 */
+
+/**
+ * intersect - Find the intersection(s) of the given two objects.
+ *  
+ * @param  {Geom} o1 first object 
+ * @param  {Geom} o2 second object 
+ * @return {Array.<Point>}    Points of intersection between the two objects. 
+ */
 function intersect(o1, o2) {
   if (o1 instanceof Circle && o2 instanceof Circle) // circle-circle
     return intersectCircleCircle(o1, o2);else if (o2 instanceof Circle) // if only one is a circle, it should be first.
-    return intersect(o2, o1);else if (o1 instanceof Circle && o2 instanceof Segment) // circle-segment
-    return intersectCircleSegment(o1, o2);else if (o1 instanceof Segment && o2 instanceof Segment) // segment-segment
+    return intersect(o2, o1);else if (o1 instanceof Circle && o2 instanceof Line) // circle-line(or segment)
+    return intersectCircleLine(o1, o2);else if (o1 instanceof Segment && o2 instanceof Segment) // segment-segment
     return intersectSegmentSegment(o1, o2);else if (o2 instanceof Segment) // if only one is a segment, it should be first.
     return intersect(o2, o1);
 
@@ -235,17 +184,17 @@ function intersectCircleCircle(c1, c2) {
   var nx = h * (c1.center.y - c2.center.y) / d;
   var ny = h * (c1.center.x - c2.center.x) / d;
 
-  return uniq([P(0, cx + nx, cy - ny, c1, c2), P(1, cx - nx, cy + ny, c1, c2)], comparePoints);
+  return uniq([P(0, cx + nx, cy - ny), P(1, cx - nx, cy + ny)], comparePoints);
 }
 
 function intersectSegmentSegment(s1, s2) {
-  var _ref2 = _toArray(s1.p);
+  var _ref2 = _toArray(s1._p);
 
   var x1 = _ref2[0].x;
   var y1 = _ref2[0].y;
   var x2 = _ref2[1].x;
   var y2 = _ref2[1].y;
-  var _ref3 = _toArray(s2.p);
+  var _ref3 = _toArray(s2._p);
 
   var x3 = _ref3[0].x;
   var y3 = _ref3[0].y;
@@ -254,12 +203,12 @@ function intersectSegmentSegment(s1, s2) {
   var s = (-s1.dy * (x1 - x3) + s1.dx * (y1 - y3)) / (-s2.dx * s1.dy + s1.dx * s2.dy);
   var t = (s2.dx * (y1 - y3) - s2.dy * (x1 - x3)) / (-s2.dx * s1.dy + s1.dx * s2.dy);
 
-  if (s >= 0 && s <= 1 && t >= 0 && t <= 1) return uniq([P(0, x1 + t * s1.dx, y1 + t * s1.dy, s1, s2)], comparePoints);else return []; // no collision
+  if (s >= 0 && s <= 1 && t >= 0 && t <= 1) return [P(0, x1 + t * s1.dx, y1 + t * s1.dy)];else return []; // no collision
 }
 
 /* http://mathworld.wolfram.com/Circle-LineIntersection.html */
-function intersectCircleSegment(c, s) {
-  var _ref4 = _toArray(s.p);
+function intersectCircleLine(c, s) {
+  var _ref4 = _toArray(s._p);
 
   var x1 = _ref4[0].x;
   var y1 = _ref4[0].y;
@@ -284,21 +233,21 @@ function intersectCircleSegment(c, s) {
 
 
   // translate (0,0)->(x0, y0).
-  return uniq([P(0, cx + nx + x0, cy + ny + y0, c, s), P(1, cx - nx + x0, cy - ny + y0, c, s)], comparePoints).filter(s.contains.bind(s)); // filter out points not defined on segment
+  return uniq([P(0, cx + nx + x0, cy + ny + y0), P(1, cx - nx + x0, cy - ny + y0)], comparePoints)
+
+  // TODO: reinstate this after addressing https://github.com/anandthakker/euclid/issues/1
+  //  .filter(s.contains.bind(s)); // filter out points not defined on segment
+  ;
 }
 
 
-
-
-
 module.exports = {
-  Intersection: Intersection,
   intersect: intersect,
   intersectCircleCircle: intersectCircleCircle,
-  intersectCircleSegment: intersectCircleSegment,
+  intersectCircleLine: intersectCircleLine,
   intersectSegmentSegment: intersectSegmentSegment };
 
-},{"./calc":3,"./model":5,"uniq":13}],5:[function(require,module,exports){
+},{"./calc":3,"./model":5,"uniq":14}],5:[function(require,module,exports){
 "use strict";
 
 var Point = require("./model/point"), Circle = require("./model/circle"), Line = require("./model/line"), Segment = require("./model/segment");
@@ -352,7 +301,7 @@ function equalWithin(threshold) {
   };
 }
 
-},{"./model/circle":6,"./model/line":8,"./model/point":9,"./model/segment":10}],6:[function(require,module,exports){
+},{"./model/circle":6,"./model/line":9,"./model/point":10,"./model/segment":11}],6:[function(require,module,exports){
 "use strict";
 
 var _extends = function (child, parent) {
@@ -439,7 +388,7 @@ var Circle = (function (Geom) {
 
 module.exports = Circle;
 
-},{"../calc":3,"./geom":7,"./point":9,"./segment":10}],7:[function(require,module,exports){
+},{"../calc":3,"./geom":7,"./point":10,"./segment":11}],7:[function(require,module,exports){
 "use strict";
 
 module.exports = (function () {
@@ -455,6 +404,72 @@ module.exports = (function () {
 })();
 
 },{}],8:[function(require,module,exports){
+"use strict";
+
+var _slice = Array.prototype.slice;
+var _extends = function (child, parent) {
+  child.prototype = Object.create(parent.prototype, {
+    constructor: {
+      value: child,
+      enumerable: false,
+      writable: true,
+      configurable: true
+    }
+  });
+  child.__proto__ = parent;
+};
+
+var Point = require("./point");
+
+var _ref = require("../intersection");
+
+var intersect = _ref.intersect;
+
+
+module.exports = (function (Point) {
+  var Intersection =
+
+
+  /**  
+   * @param {string} name
+   * @param {...Geom} objects to be intersected
+   * @param {number|Geom~boolean} [which] optional array index or filter callback in case there are multiple intersections.
+   */
+  function Intersection(name) {
+    var objects = _slice.call(arguments, 1);
+
+    Point.call(this, name, null, null);
+
+    this.which = /function|number/.test(typeof objects[objects.length - 1]) ? objects.pop() : 0;
+    this.objects = objects;
+    this.free = false;
+  };
+
+  _extends(Intersection, Point);
+
+  Intersection.prototype.update = function () {
+    var result = intersect.apply(null, this.objects);
+    if (typeof this.which === "function") result = result.filter(this.which)[0];else result = result[this.which];
+
+    if (result) {
+      var _temp;
+      ((_temp = result, this.x = _temp.x, this.y = _temp.y, _temp));
+    } else {
+      this.x = this.y = null;
+    }
+  };
+
+  Intersection.prototype.toString = function (verbose) {
+    var pstr = Point.prototype.toString.call(this);
+    return (!verbose) ? pstr : pstr + "; intersection of: " + this.objects.map(function (o) {
+      return o.toString();
+    }).join(",");
+  };
+
+  return Intersection;
+})(Point);
+
+},{"../intersection":4,"./point":10}],9:[function(require,module,exports){
 "use strict";
 
 var _extends = function (child, parent) {
@@ -553,7 +568,7 @@ var Line = (function (Geom) {
 
 module.exports = Line;
 
-},{"./geom":7}],9:[function(require,module,exports){
+},{"./geom":7}],10:[function(require,module,exports){
 "use strict";
 
 var _extends = function (child, parent) {
@@ -596,7 +611,7 @@ module.exports = (function (Geom) {
   return Point;
 })(Geom);
 
-},{"./geom":7}],10:[function(require,module,exports){
+},{"./geom":7}],11:[function(require,module,exports){
 "use strict";
 
 var _toArray = function (arr) {
@@ -705,7 +720,7 @@ var Segment = (function (Line) {
 
 module.exports = Segment;
 
-},{"../calc":3,"./line":8,"./point":9}],11:[function(require,module,exports){
+},{"../calc":3,"./line":9,"./point":10}],12:[function(require,module,exports){
 (function (global){
 "use strict";
 
@@ -814,23 +829,21 @@ function renderer(scene, svgElement) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./model":5}],12:[function(require,module,exports){
+},{"./model":5}],13:[function(require,module,exports){
 (function (global){
 "use strict";
 
 var d3 = (typeof window !== "undefined" ? window.d3 : typeof global !== "undefined" ? global.d3 : null);
 
-var _ref = require("./intersection");
+var _ref = require("./model");
 
-var Intersection = _ref.Intersection;
-var intersect = _ref.intersect;
-var _ref2 = require("./model");
+var Point = _ref.Point;
+var Line = _ref.Line;
+var Segment = _ref.Segment;
+var Circle = _ref.Circle;
+var equalWithin = _ref.equalWithin;
+var Intersection = require("./model/intersection");
 
-var Point = _ref2.Point;
-var Line = _ref2.Line;
-var Segment = _ref2.Segment;
-var Circle = _ref2.Circle;
-var equalWithin = _ref2.equalWithin;
 
 
 
@@ -851,10 +864,6 @@ var Scene = (function () {
     this.log = [];
   };
 
-  Scene.prototype.P = function (name) {
-    return this._objects.get(name);
-  };
-
   Scene.prototype.points = function () {
     return this._objects.values().filter(function (o) {
       return o instanceof Point;
@@ -870,6 +879,26 @@ var Scene = (function () {
     return this._objects.values().some(function (p) {
       return _this.equal(p, obj);
     });
+  };
+
+  Scene.prototype.is = function (obj) {
+    var _this2 = this;
+    if (typeof obj === "string") {
+      obj = this.get(obj);
+    }
+    return function (secondObj) {
+      return _this2.equal(obj, secondObj);
+    };
+  };
+
+  Scene.prototype.isnt = function (obj) {
+    var _this3 = this;
+    if (typeof obj === "string") {
+      obj = this.get(obj);
+    }
+    return function (secondObj) {
+      return !_this3.equal(obj, secondObj);
+    };
   };
 
   Scene.prototype.freeName = function () {
@@ -898,6 +927,10 @@ var Scene = (function () {
     return this;
   };
 
+  Scene.prototype.get = function (name) {
+    return this._objects.get(name);
+  };
+
   Scene.prototype.point = function (name, x, y) {
     if (!y) {
       y = x;
@@ -913,7 +946,7 @@ var Scene = (function () {
       centerId = name;
       name = null;
     }
-    return this.add(new Circle(name, this.P(centerId), this.P(boundaryId)));
+    return this.add(new Circle(name, this.get(centerId), this.get(boundaryId)));
   };
 
   Scene.prototype.segment = function (name, id1, id2) {
@@ -922,7 +955,7 @@ var Scene = (function () {
       id1 = name;
       name = null;
     }
-    return this.add(new Segment(name, this.P(id1), this.P(id2)));
+    return this.add(new Segment(name, this.get(id1), this.get(id2)));
   };
 
   Scene.prototype.line = function (name, id1, id2) {
@@ -931,7 +964,18 @@ var Scene = (function () {
       id1 = name;
       name = null;
     }
-    return this.add(new Line(name, this.P(id1), this.P(id2)));
+    return this.add(new Line(name, this.get(id1), this.get(id2)));
+  };
+
+  Scene.prototype.intersection = function (name, id1, id2, which) {
+    if (typeof id2 === "undefined") {
+      id2 = id1;
+      id1 = name;
+      name = null;
+    }
+    var _point = new Intersection(name, this.get(id1), this.get(id2), which);
+    _point.update();
+    return this.add(_point);
   };
 
   Scene.prototype.group = function (tag) {
@@ -940,58 +984,19 @@ var Scene = (function () {
   };
 
   Scene.prototype.updateIntersections = function () {
-    var _this2 = this;
-    var objectId = function (o) {
-      return (!o.name && o.parent) ? objectId(o.parent) : o.name;
-    };
-
-    var finite = this._objects.values().filter(function (obj) {
-      return !(obj instanceof Point);
-    }).map(function (obj) {
-      return (obj instanceof Line) ? Segment.clip(_this2.bounds, obj) : obj;
-    });
-    var updated = [];
-    for (var i = 0; i < finite.length; i++) {
-      for (var j = 0; j < i; j++) {
-        (function () {
-          // calculate intersections for this pair of points.
-          var _points = intersect(finite[i], finite[j]);
-
-          // could have more than one intersection; process each one.
-          _points.forEach(function (p, k) {
-            // "Snap" coordinates to the first existing point that is indistinguishable.
-            _this2._snapPoint(p);
-            addClass(p, "intersection-point");
-            // update existing or add new intersection.
-            var existing = _this2._objects.get(p.name);
-            if (existing) {
-              for (var prop in p) {
-                existing[prop] = p[prop];
-              }
-            } else {
-              _this2.add(p);
-            }
-
-            updated.push(p.name);
-          });
-        })();
-      }
-    }
-
-    // remove stale ones from the scene
     this._objects.values().filter(function (obj) {
-      return obj instanceof Intersection && updated.indexOf(obj.name) < 0;
-    }).forEach(function (key) {
-      return _this2._objects.remove(key);
+      return obj instanceof Intersection;
+    }).forEach(function (obj) {
+      return obj.update();
     });
   };
 
   Scene.prototype._snapPoint = function (p) {
-    var _points2 = this.points();
-    for (var j = 0; j < _points2.length; j++) {
-      if (this.equal(_points2[j], p)) {
-        p.x = _points2[j].x;
-        p.y = _points2[j].y;
+    var _points = this.points();
+    for (var j = 0; j < _points.length; j++) {
+      if (this.equal(_points[j], p)) {
+        p.x = _points[j].x;
+        p.y = _points[j].y;
         return;
       }
     }
@@ -1000,7 +1005,7 @@ var Scene = (function () {
   Scene.prototype.logState = function (label) {
     var self = this;
     var _objects = this._objects.values();
-    var _points3 = this.points();
+    var _points2 = this.points();
 
     var state = {
       label: label,
@@ -1019,7 +1024,7 @@ var Scene = (function () {
 module.exports = Scene;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./intersection":4,"./model":5}],13:[function(require,module,exports){
+},{"./model":5,"./model/intersection":8}],14:[function(require,module,exports){
 "use strict"
 
 function unique_pred(list, compare) {

@@ -69,22 +69,27 @@ function init() {
   var render = geom.renderer(scene, svg);
   
   scene
-  .point(width/7*3, height/2)
-  .point(width/7*4, height/2)
-  .circle(0, 1)
-  .circle(1, 0)
-  .circle(2, 0)
-  .circle(4, 0)
-  .circle(6, 0)
-  .circle(8, 0)
-  .circle(3, 0)
+  .point('p0', width/7*3, height/2)
+  .point('p1', width/7*4, height/2)
+  .circle('a', 'p0', 'p1')
+  .circle('b', 'p1', 'p0')
+  .intersection('p2', 'a', 'b', 0)
+  .intersection('p3', 'a', 'b', 1)
+  .circle('c', 'p3', 'p0')
+  .intersection('p4', 'c', 'a', scene.isnt('p1'))
+  .circle('d', 'p4', 'p0')
+  .intersection('p5', 'd', 'a', scene.isnt('p3'))
+  .circle('e', 'p5', 'p0')
+  .intersection('p6', 'e', 'a', scene.isnt('p4'))
+  .circle('f', 'p6', 'p0')
+  .circle('g', 'p2', 'p0')
   .group('hex')
-  .segment(1,2)
-  .segment(2,4)
-  .segment(4,6)
-  .segment(6,8)
-  .segment(8,3)
-  .segment(3,1)
+  .segment('p1', 'p3')
+  .segment('p3', 'p4')
+  .segment('p4', 'p5')
+  .segment('p5', 'p6')
+  .segment('p6', 'p2')
+  .segment('p2', 'p1')
   
   function update() {
     scene.updateIntersections();
@@ -94,7 +99,7 @@ function init() {
     d3.selectAll('.line').call(geom.behavior.move.line(update));
   }
   
-  geom.behavior.follow(svg, scene.P(1), update);
+  geom.behavior.follow(svg, scene.get('p1'), update);
   
   update();
 }
