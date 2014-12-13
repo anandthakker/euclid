@@ -4,6 +4,22 @@ body > * {
   margin: 0 auto;
 }
 
+header ul {
+  font-size: .8em;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  li {
+    display: inline-block;
+    & + li { margin-left: .5em; }
+  }
+}
+header { margin-bottom: 1em; }
+
+textarea {
+  font-family: monospace;
+}
+
 #home svg {
   max-width: 50%;
   display: block;
@@ -16,6 +32,20 @@ body > * {
     max-width: 49%;
     display: inline-block;
     vertical-align: top;
+  }
+  
+  .guides {
+    stroke: #ddd;
+    &.point {
+      fill: #fff;
+      stroke: #888;
+    }
+  }
+  .perpendicular-bisectors {
+    stroke-dasharray: 5,5;
+  }
+  .result {
+    stroke: #050;
   }
 }
 

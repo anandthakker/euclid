@@ -25,21 +25,61 @@ Copyright 2014 Anand Thakker.
         <![endif]-->
 <header>
   <h1>Euclid JS</h1>
-  <p><a href="https://github.com/anandthakker/euclid">View on Github</a></p>
+  <p>
+    Euclidean geometry in javascript.
+  </p>
+  <ul>
+    <li>
+      <a href="index.html">Basic Example</a>
+    </li>
+    <li>
+      <a href="parse.html">Parsing from a geometry-proof like description.</a>
+    </li>
+    <li>
+      <a href="index.html">Just for fun: as a dynamic background</a>
+    </li>
+    <li>
+      <a href="https://github.com/anandthakker/euclid">Source on Github</a>
+    </li>
+  </ul>
 </header>
 
 <section id="parse">
   <div class="text">
+    <p>
+      The diagram at the right comes from parsing the text below using
+      <a href="https://www.npmjs.com/package/euclid-parser">euclid-parser</a>,
+      which is generated from 
+      <a href="https://github.com/anandthakker/euclid-parser/blob/master/grammar.pegjs">this grammar</a>
+      using <a href="http://pegjs.majda.cz/">PEG.js</a>.
+    </p>
     <div class="message">
     </div>
-    <textarea rows="10" cols="55">
-Let a = (100, 100).
-Let b = (500, 100).
-Let c = (300, 200).
+    <textarea rows="25" cols="55">[main-figure]
+Let a = (300, 300).
+Let b = (500, 300).
+Let c = (300, 400).
 Let s be a segment with endpoints a and b.
 Let t be a segment with endpoints b and c.
 Let u be a segment from a to c.
-    </textarea>
+
+[guides]
+Let k be a circle centered at a containing b.
+Let l be a circle centered at b containing a.
+Let m be the circle centered at b containing c.
+Let n be the circle centered at c containing b.
+d = the intersection of k and l
+e = the intersection of k and l that is not d
+f = the intersection of m and n
+g = the intersection of m and n that is not f
+
+[perpendicular-bisectors]
+Let v be the line determined by d and e
+Let w be the line determined by f and g
+
+[result]
+Let O be the intersection of v and w
+Draw the circle centered at O containing a.</textarea>
   </div>
   <svg class="geometry-scene" viewbox="0 0 800 800">
   </svg>

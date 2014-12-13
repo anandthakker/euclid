@@ -137,6 +137,22 @@ body > * {
   max-width: 1000px;
   margin: 0 auto; }
 
+header ul {
+  font-size: 0.8em;
+  list-style-type: none;
+  margin: 0;
+  padding: 0; }
+  header ul li {
+    display: inline-block; }
+    header ul li + li {
+      margin-left: 0.5em; }
+
+header {
+  margin-bottom: 1em; }
+
+textarea {
+  font-family: monospace; }
+
 #home svg {
   max-width: 50%;
   display: block;
@@ -146,6 +162,15 @@ body > * {
   max-width: 49%;
   display: inline-block;
   vertical-align: top; }
+#parse .guides {
+  stroke: #ddd; }
+  #parse .guides.point {
+    fill: #fff;
+    stroke: #888; }
+#parse .perpendicular-bisectors {
+  stroke-dasharray: 5, 5; }
+#parse .result {
+  stroke: #050; }
 
 #background-example .geometry-scene {
   /* imitate a background image */
