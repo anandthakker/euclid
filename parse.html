@@ -28,29 +28,25 @@ Copyright 2014 Anand Thakker.
   <p><a href="https://github.com/anandthakker/euclid">View on Github</a></p>
 </header>
 
-<section id="background-example">
-  
+<section id="parse">
+  <div class="text">
+    <div class="message">
+    </div>
+    <textarea rows="10" cols="55">
+Let a = (100, 100).
+Let b = (500, 100).
+Let c = (300, 200).
+Let s be a segment with endpoints a and b.
+Let t be a segment with endpoints b and c.
+Let u be a segment from a to c.
+    </textarea>
+  </div>
   <svg class="geometry-scene" viewbox="0 0 800 800">
   </svg>
-  
-  <div class="content">
-    <h1>Title of my awesome page.</h1>
-    It is required to construct an equilateral triangle on the straight line AB.
-    I.Post.3 
-    I.Post.1
-    Describe the circle BCD with center A and radius AB. Again describe the circle ACE with center B and radius BA. Join the straight lines CA and CB from the point C at which the circles cut one another to the points A and B.
-    I.Def.15
-    Now, since the point A is the center of the circle CDB, therefore AC equals AB. Again, since the point B is the center of the circle CAE, therefore BC equals BA.
-    But AC was proved equal to AB, therefore each of the straight lines AC and BC equals AB.
-    C.N.1
-    And things which equal the same thing also equal one another, therefore AC also equals BC.
-    Therefore the three straight lines AC, AB, and BC equal one another.
-    I.Def.20
-    Therefore the triangle ABC is equilateral, and it has been constructed on the given finite straight line AB.
-  </div>
 </section>
 
 <script charset="utf-8">
+
 function init() {
   var Scene = geom.Scene;
   
@@ -59,8 +55,6 @@ function init() {
   width = viewBox.width,
   height = viewBox.height;
   var scene = new Scene({
-    width: width,
-    height: height,
     left: viewBox.x,
     top: viewBox.y,
     right: viewBox.x + width,
@@ -68,28 +62,23 @@ function init() {
   })
   var render = geom.renderer(scene, svg);
   
-  scene
-  .point('p0', width/7*3, height/2)
-  .point('p1', width/7*4, height/2)
-  .circle('a', 'p0', 'p1')
-  .circle('b', 'p1', 'p0')
-  .intersection('p2', 'a', 'b', 0)
-  .intersection('p3', 'a', 'b', 1)
-  .circle('c', 'p3', 'p0')
-  .intersection('p4', 'c', 'a', scene.isnt('p1'))
-  .circle('d', 'p4', 'p0')
-  .intersection('p5', 'd', 'a', scene.isnt('p3'))
-  .circle('e', 'p5', 'p0')
-  .intersection('p6', 'e', 'a', scene.isnt('p4'))
-  .circle('f', 'p6', 'p0')
-  .circle('g', 'p2', 'p0')
-  .group('hex')
-  .segment('p1', 'p3')
-  .segment('p3', 'p4')
-  .segment('p4', 'p5')
-  .segment('p5', 'p6')
-  .segment('p6', 'p2')
-  .segment('p2', 'p1')
+  var text = document.querySelector('textarea');
+  var message = document.querySelector('.message');
+  text.addEventListener('keyup', parse);
+  function parse() { scene.parse(text.value.trim(), onparsed); }
+  function onparsed(res, err) {
+    if(err) {
+      message.innerText = err.line + ':' + err.column + ': ' + err.message;
+      console.log(err);
+    }
+    else {
+      message.innerText = '';
+      update();
+    }
+  }
+  
+  parse();
+
   
   function update() {
     scene.update();
@@ -98,8 +87,6 @@ function init() {
     d3.selectAll('.circle').call(geom.behavior.move.circle(update));
     d3.selectAll('.line').call(geom.behavior.move.line(update));
   }
-  
-  geom.behavior.follow(svg, scene.get('p1'), update);
   
   update();
 }

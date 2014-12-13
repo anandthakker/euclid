@@ -142,6 +142,11 @@ body > * {
   display: block;
   float: right; }
 
+#parse svg, #parse .text {
+  max-width: 49%;
+  display: inline-block;
+  vertical-align: top; }
+
 #background-example .geometry-scene {
   /* imitate a background image */
   position: absolute;
