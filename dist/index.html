@@ -37,16 +37,24 @@ Copyright 2014 Anand Thakker.
     The code looks like this:
     <pre>
       scene
-      .point(width/7*3, height/3)
-      .point(width/7*5, height/3)
-      .segment(0,1)
-      .circle(0,1)
-      .circle(1,0)
-      .line(0,2)
-      .segment(0,3)
-      .segment(4,1)
-      .segment(2,6)
+      .point        ('A', width/7*3, height/3)
+      .point        ('B', width/7*5, height/3)
+      .segment      ('S', 'A', 'B')
+      .circle       ('M', 'A', 'B')
+      .circle       ('N', 'B', 'A')
+      .intersection ('C', 'M', 'N', 0)
+      .intersection ('D', 'M', 'N', 1)
+      .line         ('T', 'A', 'C')
+      .segment      ('U', 'A', 'D')
+      .intersection ('E', 'T', 'M', scene.isnt('C'))
+      .segment      ('V', 'E', 'B')
+      .intersection ('F', 'V', 'U')
+      .segment      ('W', 'F', 'C')
+      .intersection ('W', 'S')
     </pre>
+    (The first argument in each case is a label.  The third argument to
+    <code>intersection</code> disambiguates if there could be multiple
+    intersections.)
   </p>
   <p>Also check out <a href="background.html">this one</a>.</p>
 </section>
@@ -67,16 +75,24 @@ function init() {
     bottom: viewBox.y + height
   })
   var render = geom.renderer(scene, svg);
-  
+    
   scene
   .point('A', width/7*3, height/3)
   .point('B', width/7*5, height/3)
-  .segment('A','B')
-  .circle('A', 'B')
-  .circle('B', 'A')
+  .segment('S', 'A', 'B')
+  .circle('M', 'A', 'B')
+  .circle('N', 'B', 'A')
+  .intersection('C', 'M', 'N', 0)
+  .intersection('D', 'M', 'N', 1)
+  .line('T', 'A', 'C')
+  .segment('U', 'A', 'D')
+  .intersection('E', 'T', 'M', scene.isnt('C') )
+  .segment('V', 'E', 'B')
+  .intersection('F', 'V', 'U')
+  .segment('W', 'F', 'C')
+  .intersection('W', 'S')
   
-  console.log(scene._objects.values());
-
+  
   
   function update() {
     scene.updateIntersections();
