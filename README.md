@@ -51,28 +51,32 @@ var scene = new geom.Scene({
   bottom: 1000
 });
   
-scene.point(width/7*3, height/2) // add a couple of free points.
-  .point(width/7*4, height/2)
-  // add circle centered at point 0, with point 1 on its circumference.
-  .circle(0, 1)
-  .circle(1, 0)
-  // now that two overlapping circles exist, their intersections are in the
-  // scene as points 2 and 3.
-  .circle(2, 0)
-  .circle(4, 0)
-  .circle(6, 0)
-  .circle(8, 0)
-  .circle(3, 0)
-  // tag subsequent objects with string 'hex', used by renderer to add
-  // arbitrary classes to svg objects.
-  .group('hex')
-  .segment(1,2)
-  .segment(2,4)
-  .segment(4,6)
-  .segment(6,8)
-  .segment(8,3)
-  .segment(3,1)
+scene
+  .point('A', width/7*3, height/3) // add a couple of free points.
+  .poinnt('B', width/7*5, height/3)
+  .segment('S', 'A', 'B')
 
+  // add circle centered at point 'A', with point 'B' on its circumference.
+  .circle('M', 'A', 'B')
+  .circle('N', 'B', 'A')
+
+  // tag subsequent objects with string 'layer2', used by renderer to add
+  // arbitrary CSS classes to svg objects.
+  .group('layer2')
+  
+  // let C and D be the two intersections of circles M and N
+  .intersection('C', 'M', 'N', 0)
+  .intersection('D', 'M', 'N', 1)
+  .line('T', 'A', 'C')
+  .segment('U', 'A', 'D')
+  
+  // let E be the intersection of line T and circle M that *isn't* equivalent to point C.
+  .intersection('E', 'T', 'M', scene.isnt('C') )
+  .segment('V', 'E', 'B')
+  .intersection('F', 'V', 'U')
+  .segment('W', 'F', 'C')
+  .intersection('W', 'S')
+  
 
 // render using d3.
 var render = geom.renderer(scene, document.querySelector('svg'));
