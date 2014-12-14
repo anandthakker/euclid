@@ -90,26 +90,25 @@ Draw the circle centered at O containing a.</textarea>
 function init() {
   var Scene = geom.Scene;
   
-  var svg = document.querySelector('svg');
-  var viewBox = svg.viewBox.baseVal,
+  var svg = document.querySelector('svg'),
+  viewBox = svg.viewBox.baseVal,
   width = viewBox.width,
-  height = viewBox.height;
-  var scene = new Scene({
+  height = viewBox.height,
+  scene = new Scene({
     left: viewBox.x,
     top: viewBox.y,
     right: viewBox.x + width,
     bottom: viewBox.y + height
-  })
-  var render = geom.renderer(scene, svg);
+  }),
+  render = geom.renderer(scene, svg);
   
   var text = document.querySelector('textarea');
   var message = document.querySelector('.message');
   text.addEventListener('keyup', parse);
-  function parse() { scene.parse(text.value.trim(), onparsed); }
+  function parse() { geom.parse(scene, text.value.trim(), onparsed); }
   function onparsed(res, err) {
     if(err) {
       message.innerText = err.line + ':' + err.column + ': ' + err.message;
-      console.log(err);
     }
     else {
       message.innerText = '';
