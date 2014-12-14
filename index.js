@@ -4,5 +4,6 @@ module.exports = {
   intersection: require('./lib/intersection'),
   Scene: require('./lib/scene'),
   renderer: require('./lib/render'),
-  behavior: require('./lib/behavior')
+  behavior: require('./lib/behavior'),
+  parse: require('./lib/parse')
 }
