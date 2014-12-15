@@ -10,6 +10,9 @@
     "url": "https://github.com/anandthakker/euclid.git"
   },
   "license": "MIT",
+  "scripts": {
+    "test": "6to5-node node_modules/.bin/tape test/*.js"
+  },
   "main": "index.js",
   "browserify": {
     "transform": [
