@@ -1,4 +1,4 @@
-# Euclid
+# Euclid [![Build Status](https://travis-ci.org/anandthakker/euclid.svg?branch=master)](https://travis-ci.org/anandthakker/euclid)
 
 Euclidean geometry in javascript.
 [Here's](http://anandthakker.github.io/euclid/) a demo; [here's](http://anandthakker.github.io/euclid/background.html) another one.
