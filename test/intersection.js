@@ -69,24 +69,24 @@ test('circle-segment: 1 intersection: tangent', function(t) {
   t.end();
 })
 
-test('circle-segment: vertical line', function(t) {
+test('circle-line: vertical line', function(t) {
   let circle = new Circle(P(0,0),5),
-    segment = new Segment(P(0,0), P(0, 10));
+    segment = new Line(P(0,0), P(0, 10));
   
   let ints = intersect(circle, segment);
-  t.equal(ints.length, 1);
+  t.equal(ints.length, 2);
   t.ok(circle.contains(ints[0]));
   t.ok(segment.contains(ints[0]));
   
   t.end();
 })
 
-test('circle-segment: horizontal line', function(t) {
+test('circle-line: horizontal line', function(t) {
   let circle = new Circle(P(0,0),5),
-  segment = new Segment(P(0,0), P(10, 0));
+  segment = new Line(P(0,0), P(10, 0));
   
   let ints = intersect(circle, segment);
-  t.equal(ints.length, 1);
+  t.equal(ints.length, 2);
   t.ok(circle.contains(ints[0]));
   t.ok(segment.contains(ints[0]));
   
