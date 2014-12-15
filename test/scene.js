@@ -4,6 +4,35 @@ var test = require('tape'),
     model = require('../lib/model');
 
 
+test('build a simple scene', function(t) {
+  var scene = new Scene({
+    left: 0,
+    right: 1000,
+    top: 0,
+    bottom: 1000
+  });
+  
+  scene
+  .point('A', 200, 500)
+  .point('B', 600, 500)
+  .segment('S', 'A', 'B')
+  .circle('M', 'A', 'B')
+  .circle('N', 'B', 'A')
+  .intersection('C', 'M', 'N', 0)
+  .intersection('D', 'M', 'N', 1)
+  .line('T', 'A', 'C')
+  .segment('U', 'A', 'D')
+  .intersection('E', 'T', 'M', scene.isnt('C') )
+  .segment('V', 'E', 'B')
+  .intersection('F', 'V', 'U')
+  .segment('W', 'F', 'C')
+  .intersection('W', 'S')
+
+  t.equal(scene.objects().length, 14, 'add all the objects');
+  t.end();
+});
+
+
 test('generates a name when adding an unnamed object', function(t) {
   var scene = new Scene({
     left: 0,
