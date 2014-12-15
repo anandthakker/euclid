@@ -167,10 +167,10 @@ textarea {
   #parse .guides.point {
     fill: #fff;
     stroke: #888; }
-#parse .perpendicular-bisectors {
-  stroke-dasharray: 5, 5; }
 #parse .result {
   stroke: #050; }
+  #parse .result.line {
+    stroke-dasharray: 5, 5; }
 
 #background-example .geometry-scene {
   /* imitate a background image */
