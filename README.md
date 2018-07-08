@@ -1,7 +1,7 @@
 # Euclid [![Build Status](https://travis-ci.org/anandthakker/euclid.svg?branch=master)](https://travis-ci.org/anandthakker/euclid) [![JS.ORG](https://img.shields.io/badge/js.org-euclid-ffb400.svg?style=flat-square)](http://js.org)
 
 Euclidean geometry in javascript.
-[Here's](http://anandthakker.github.io/euclid/) a demo; [here's](http://anandthakker.github.io/euclid/background.html) another one.
+[Here's](http://anandthakker.github.io/euclid/) a demo; [here's](http://anandthakker.net) another one (mess with it by clicking "Play with the geometry background!" at the bottom).
 
 **NOTE:** Still very preliminary / experimental.
 
